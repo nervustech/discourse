@@ -1,4 +1,8 @@
+'use client';
+
+import { useState } from 'react';
 import { Header } from '@/components/layout/header';
+import { SearchAndFilter } from '@/components/classes/search-and-filter';
 
 // This will be replaced with real data from Supabase
 const mockClasses = [
@@ -41,6 +45,22 @@ const mockClasses = [
 ];
 
 export default function ClassesPage() {
+    const [searchQuery, setSearchQuery] = useState('');
+    const [selectedGrades, setSelectedGrades] = useState<string[]>([]);
+
+    // Filter classes based on search and grade filters
+    const filteredClasses = mockClasses.filter((classItem) => {
+        // Search filter
+        const matchesSearch = searchQuery === '' ||
+            classItem.name.toLowerCase().includes(searchQuery.toLowerCase());
+
+        // Grade filter
+        const matchesGrade = selectedGrades.length === 0 ||
+            selectedGrades.includes(classItem.grade);
+
+        return matchesSearch && matchesGrade;
+    });
+
     return (
         <>
             <Header
@@ -52,20 +72,27 @@ export default function ClassesPage() {
 
             <div className="flex-1 overflow-auto p-6">
                 <div className="mx-auto max-w-4xl space-y-4">
-                    {/* Search and Filter - TODO */}
-                    <div className="rounded-lg border bg-card p-4">
-                        <p className="text-muted-foreground">Search and filter coming next...</p>
-                    </div>
+                    {/* Search and Filter */}
+                    <SearchAndFilter
+                        onSearch={setSearchQuery}
+                        onFilterChange={setSelectedGrades}
+                    />
 
-                    {/* Class Cards - TODO */}
-                    {mockClasses.map((classItem) => (
-                        <div key={classItem.id} className="rounded-lg border bg-card p-4">
-                            <p className="font-medium">{classItem.name}</p>
-                            <p className="text-sm text-muted-foreground">
-                                {classItem.studentCount} Students • Avg: {classItem.avgScore}%
-                            </p>
+                    {/* Class Cards */}
+                    {filteredClasses.length === 0 ? (
+                        <div className="rounded-lg border bg-card p-8 text-center">
+                            <p className="text-muted-foreground">No classes found matching your filters.</p>
                         </div>
-                    ))}
+                    ) : (
+                        filteredClasses.map((classItem) => (
+                            <div key={classItem.id} className="rounded-lg border bg-card p-4">
+                                <p className="font-medium">{classItem.name}</p>
+                                <p className="text-sm text-muted-foreground">
+                                    {classItem.studentCount} Students • Avg: {classItem.avgScore}%
+                                </p>
+                            </div>
+                        ))
+                    )}
                 </div>
             </div>
         </>
