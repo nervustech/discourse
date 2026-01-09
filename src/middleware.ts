@@ -34,6 +34,13 @@ export async function middleware(request: NextRequest) {
         data: { user },
     } = await supabase.auth.getUser()
 
+    // DEV BYPASS: Skip auth in development when needed
+    // Remove this block before production!
+    const skipAuth = process.env.SKIP_AUTH === 'true'
+    if (skipAuth) {
+        return supabaseResponse
+    }
+
     // Define public routes that don't require authentication
     const publicRoutes = ['/login', '/signup']
     const isPublicRoute = publicRoutes.some(route =>
