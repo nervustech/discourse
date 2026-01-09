@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Header } from '@/components/layout/header';
 import { SearchAndFilter } from '@/components/classes/search-and-filter';
+import { ClassCard, type ClassData } from '@/components/classes/class-card';
 
 // This will be replaced with real data from Supabase
 const mockClasses = [
@@ -84,13 +85,12 @@ export default function ClassesPage() {
                             <p className="text-muted-foreground">No classes found matching your filters.</p>
                         </div>
                     ) : (
-                        filteredClasses.map((classItem) => (
-                            <div key={classItem.id} className="rounded-lg border bg-card p-4">
-                                <p className="font-medium">{classItem.name}</p>
-                                <p className="text-sm text-muted-foreground">
-                                    {classItem.studentCount} Students • Avg: {classItem.avgScore}%
-                                </p>
-                            </div>
+                        filteredClasses.map((classItem, index) => (
+                            <ClassCard
+                                key={classItem.id}
+                                classData={classItem}
+                                defaultExpanded={index === 0}
+                            />
                         ))
                     )}
                 </div>
